@@ -25,11 +25,9 @@ app.post('/logger', (req, res) => {
         if (token === apiKeySecret) {
             const { message } = req.body;
             if (message) {
-                // console.log(message);
                 const message = {
                     message: req.body.message,
-                    timestamp: new Date().toISOString(),
-                    user: 'test-user'
+                    timestamp: new Date().toISOString()
                 };
                 logger.warn(message);
                 res.status(200).send('Message logged');
