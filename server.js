@@ -1,6 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const winston = require('winston');
+
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [new winston.transports.Console()]
+});
 
 dotenv.config();
 
@@ -18,7 +25,13 @@ app.post('/logger', (req, res) => {
         if (token === apiKeySecret) {
             const { message } = req.body;
             if (message) {
-                console.log(message);
+                // console.log(message);
+                const message = {
+                    message: req.body.message,
+                    timestamp: new Date().toISOString(),
+                    user: 'test-user'
+                };
+                logger.info(message);
                 res.status(200).send('Message logged');
             } else {
                 res.status(400).send('Message parameter is missing');
