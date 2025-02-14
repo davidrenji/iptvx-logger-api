@@ -31,7 +31,7 @@ app.post('/logger', (req, res) => {
                     timestamp: new Date().toISOString(),
                     user: 'test-user'
                 };
-                logger.info(message);
+                logger.warn(message);
                 res.status(200).send('Message logged');
             } else {
                 res.status(400).send('Message parameter is missing');
