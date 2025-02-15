@@ -10,17 +10,18 @@ router.post('/logger', async (req, res) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
         if (token === process.env.API_KEY_SECRET) {
-            const { message } = req.body;
+            const { message, deviceId } = req.body;
             if (message) {
                 const logMessage = {
-                    message: req.body.message,
+                    message,
+                    deviceId,
                     timestamp: new Date().toISOString()
                 };
                 console.log(logMessage);
 
                 try {
                     const result = await prisma.logger.create({
-                        data: { message }
+                        data: { message, deviceId }
                     });
                     res.status(200).send(`Message logged with ID: ${result.id}`);
                 } catch (error) {

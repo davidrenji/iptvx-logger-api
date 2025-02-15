@@ -10,5 +10,6 @@ datasource db {
 model Logger {
     id        Int      @id @default(autoincrement())
     message   String
+    deviceId  String?  @db.VarChar(255)
     createdAt DateTime @default(now())
 }
