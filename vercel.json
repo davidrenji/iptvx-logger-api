@@ -18,5 +18,6 @@
             "dest": "src/main.ts"
         }
     ],
+    "installCommand": "npm install",
     "buildCommand": "npm run build && npx prisma generate"
 }
