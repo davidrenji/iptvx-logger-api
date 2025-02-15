@@ -1,36 +1,37 @@
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
+const { PrismaClient } = require('@prisma/client');
 const winston = require('winston');
 
+const router = express.Router();
+const prisma = new PrismaClient();
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
     transports: [new winston.transports.Console()]
 });
 
-dotenv.config();
-
-const app = express();
-const port = 3200;
-const apiKeySecret = process.env.API_KEY_SECRET;
-
-app.use(cors());
-app.use(express.json());
-
-app.post('/logger', (req, res) => {
+router.post('/logger', async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
-        if (token === apiKeySecret) {
+        if (token === process.env.API_KEY_SECRET) {
             const { message } = req.body;
             if (message) {
-                const message = {
+                const logMessage = {
                     message: req.body.message,
                     timestamp: new Date().toISOString()
                 };
-                logger.warn(message);
-                res.status(200).send('Message logged');
+                logger.warn(logMessage);
+
+                try {
+                    const result = await prisma.logger.create({
+                        data: { message }
+                    });
+                    res.status(200).send(`Message logged with ID: ${result.id}`);
+                } catch (error) {
+                    console.error('Error saving message to database:', error);
+                    res.status(500).send('Internal Server Error');
+                }
             } else {
                 res.status(400).send('Message parameter is missing');
             }
@@ -42,6 +43,4 @@ app.post('/logger', (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+module.exports = router;
