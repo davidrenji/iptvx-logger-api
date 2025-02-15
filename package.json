@@ -5,7 +5,8 @@
     "scripts": {
         "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts",
         "build": "tsc",
-        "prisma": "prisma"
+        "prisma": "prisma",
+        "postinstall": "prisma generate && npm run build"
     },
     "dependencies": {
         "@prisma/client": "^4.5.0",
